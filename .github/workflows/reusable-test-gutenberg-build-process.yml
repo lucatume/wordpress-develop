@@ -89,7 +89,19 @@ jobs:
           git --version
 
       - name: Install Gutenberg Dependencies
-        run: npm ci
+        # npm can exit mid-install with `npm ERR! cb() never called!`, a class of race conditions
+        # in npm 6 (used by branches up to 6.3) that is end of life and will not be fixed; a retry
+        # usually succeeds. `npm ci` removes node_modules first, so each attempt starts clean.
+        # See https://github.com/npm/cli/issues/4712.
+        shell: bash
+        env:
+          NPM_CI_MAX_ATTEMPTS: 3
+        run: |
+          for (( attempt = 1; attempt < NPM_CI_MAX_ATTEMPTS; attempt++ )); do
+            npm ci && exit 0
+            echo "::warning::npm ci failed on attempt $attempt of $NPM_CI_MAX_ATTEMPTS, retrying."
+          done
+          npm ci
         working-directory: ${{ env.GUTENBERG_DIRECTORY }}
 
       - name: Build Gutenberg
@@ -97,7 +109,19 @@ jobs:
         working-directory: ${{ env.GUTENBERG_DIRECTORY }}
 
       - name: Install Core Dependencies
-        run: npm ci
+        # npm can exit mid-install with `npm ERR! cb() never called!`, a class of race conditions
+        # in npm 6 (used by branches up to 6.3) that is end of life and will not be fixed; a retry
+        # usually succeeds. `npm ci` removes node_modules first, so each attempt starts clean.
+        # See https://github.com/npm/cli/issues/4712.
+        shell: bash
+        env:
+          NPM_CI_MAX_ATTEMPTS: 3
+        run: |
+          for (( attempt = 1; attempt < NPM_CI_MAX_ATTEMPTS; attempt++ )); do
+            npm ci && exit 0
+            echo "::warning::npm ci failed on attempt $attempt of $NPM_CI_MAX_ATTEMPTS, retrying."
+          done
+          npm ci
 
       - name: Build WordPress to run from ${{ inputs.directory }}
         run: npm run ${{ inputs.directory == 'src' && 'build:dev' || 'build' }}
