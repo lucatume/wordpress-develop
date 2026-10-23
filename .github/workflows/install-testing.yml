@@ -51,7 +51,7 @@ jobs:
     uses: ./.github/workflows/reusable-support-json-reader-v1.yml
     permissions:
       contents: read
-    if: ${{ github.repository == 'WordPress/wordpress-develop' }}
+    if: ${{ github.repository == 'lucatume/wordpress-develop' }}
     with:
       wp-version: ${{ inputs.wp-version }}
 
@@ -68,7 +68,7 @@ jobs:
     permissions:
       contents: read
     runs-on: ${{ matrix.os }}
-    if: ${{ github.repository == 'WordPress/wordpress-develop' }}
+    if: ${{ github.repository == 'lucatume/wordpress-develop' }}
     timeout-minutes: 15
     needs: [ build-test-matrix ]
 
@@ -200,7 +200,7 @@ jobs:
       actions: read
       contents: read
     needs: [ install-tests-mysql ]
-    if: ${{ github.repository == 'WordPress/wordpress-develop' && github.event_name != 'pull_request' && always() }}
+    if: ${{ github.repository == 'lucatume/wordpress-develop' && github.event_name != 'pull_request' && always() }}
     with:
       calling_status: ${{ contains( needs.*.result, 'cancelled' ) && 'cancelled' || contains( needs.*.result, 'failure' ) && 'failure' || 'success' }}
     secrets:
@@ -217,7 +217,7 @@ jobs:
     needs: [ slack-notifications ]
     if: |
       always() &&
-      github.repository == 'WordPress/wordpress-develop' &&
+      github.repository == 'lucatume/wordpress-develop' &&
       github.event_name != 'pull_request' &&
       github.run_attempt < 2 &&
       (
