@@ -9,6 +9,7 @@ on:
       - trunk
       - '6.[8-9]'
       - '[7-9].[0-9]'
+      - test/wp-cli-self-repo-7.1
     paths:
       # Any change to a source PHP file should run checks.
       - 'src/**.php'
@@ -44,7 +45,7 @@ jobs:
   build:
     name: Build
     uses: WordPress/wordpress-develop/.github/workflows/reusable-build-package.yml@trunk
-    if: ${{ startsWith( github.repository, 'WordPress/' ) && ( github.repository == 'WordPress/wordpress-develop' || github.event_name == 'pull_request' ) }}
+    if: ${{ github.repository == 'lucatume/wordpress-develop' }}
     permissions:
       contents: read
 
@@ -86,7 +87,7 @@ jobs:
   # Run a limited set of upgrade tests for the current branch on forks.
   upgrade-tests-develop-forks:
     name: Upgrade from ${{ matrix.wp }}
-    uses: WordPress/wordpress-develop/.github/workflows/reusable-upgrade-testing.yml@trunk
+    uses: lucatume/wordpress-develop/.github/workflows/reusable-upgrade-testing.yml@fix/wp-cli-install-retry
     if: ${{ github.repository != 'WordPress/wordpress-develop' }}
     needs: [ build ]
     permissions:
